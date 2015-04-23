@@ -44,11 +44,11 @@ in a ``StringTable`` ``st``::
   >>> print ls.comment
   My important string
 
-You can also add entries to a ``StringTable`` with
+You can also add entries to a ``StringTable`` with::
 
   >>> st.store(LocalizedString('One', 'Uno'))
 
-or with a comment
+or with a comment::
 
   >>> st.store(LocalizedString('MB', 'Mo', 'Megabytes'))
 
