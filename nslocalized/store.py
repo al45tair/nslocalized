@@ -279,6 +279,8 @@ class StringTable(object):
             writer.write('\ufeff')
         
         keys = self.strings.keys()
+        if not isinstance(keys, list):
+            keys = list(keys)
         keys.sort()
 
         first = True
