@@ -6,3 +6,4 @@ syntax: glob
 .DS_Store
 dist
 build
+.idea
