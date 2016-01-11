@@ -5,10 +5,10 @@ from nslocalized import *
 
 def test_read_utf8_no_bom():
     """Test that we can read UTF-8 strings files."""
-    data=b'''\
+    data='''\
 /* Test string */
 "åéîøü" = "ÅÉÎØÜ";
-'''
+'''.encode('utf-8')
     
     with io.BytesIO(data) as f:
         st = StringTable.read(f)

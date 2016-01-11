@@ -4,6 +4,8 @@ import codecs
 import io
 import re
 
+import six
+
 from .utils import uchr, escape_string
 
 # Read states
@@ -106,7 +108,7 @@ class StringTable(object):
     # the strings into that.  Otherwise reads into the stringtable "self".
     @alsoconstruct
     def read(self, file_or_name, process_escapes=True):
-        if isinstance(file_or_name, basestring):
+        if isinstance(file_or_name, six.string_types):
             buffered = io.open(file_or_name, 'rb')
         elif getattr(file_or_name, 'peek', None):
             buffered = file_or_name
@@ -270,7 +272,7 @@ class StringTable(object):
         return self;
         
     def write(self, file_or_name, encoding='utf_16', escape_strings=True):
-        if isinstance(file_or_name, basestring):
+        if isinstance(file_or_name, six.string_types):
             file_or_name = io.open(file_or_name, 'wb')
 
         writer_factory = codecs.getwriter(encoding)
@@ -283,6 +285,8 @@ class StringTable(object):
             writer.write('\ufeff')
         
         keys = self.strings.keys()
+        if not isinstance(keys, list):
+            keys = list(keys)
         keys.sort()
 
         first = True
