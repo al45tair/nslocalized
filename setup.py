@@ -19,7 +19,7 @@ with open('README.rst', 'rb') as f:
         
 setup(
     name='nslocalized',
-    version='0.3.0',
+    version='0.2.0',
     description='Reads and writes Mac OS X .strings files',
     long_description=long_desc,
     author='Alastair Houghton',
