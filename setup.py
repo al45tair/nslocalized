@@ -37,6 +37,7 @@ setup(
         'test': PyTest
         },
     install_requires=[
+        'six>=1.5.0',
         ],
     provides=['nslocalized']
     )
