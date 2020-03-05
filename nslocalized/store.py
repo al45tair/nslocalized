@@ -71,8 +71,9 @@ class LocalizedString(object):
         return '%r' % self.target
     
 class StringTable(object):
-    def __init__(self):
+    def __init__(self, include_empty_comments=False):
         self.strings = {}
+        self.include_empty_comments = include_empty_comments
 
     def __eq__(self, other):
         return self.strings == other.strings
@@ -298,7 +299,7 @@ class StringTable(object):
             ls = self.strings[k]
             if ls.comment:
                 writer.write('/* %s */\n' % ls.comment)
-            else:
+            elif self.include_empty_comments:
                 writer.write('/* No description */\n')
 
             if escape_strings:

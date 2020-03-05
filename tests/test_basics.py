@@ -92,3 +92,29 @@ def test_writing():
             s2 = StringTable.read(f)
 
             assert st == s2
+
+def test_include_empty_comments():
+    """Test writing and not writing empty comments."""
+    text = '''\
+"A" = "A";
+'''
+
+    text_with_empty_comments = '''\
+/* No description */
+"A" = "A";
+'''
+    with io.BytesIO(text.encode('utf_8')) as f:
+        st = StringTable.read(f)
+
+    with io.BytesIO() as f:
+        st.write(f, encoding='utf-8')
+        f.seek(0)
+        text2 = f.read().decode('utf-8')
+        assert text == text2
+
+    with io.BytesIO() as f:
+        st.include_empty_comments = True
+        st.write(f, encoding='utf-8')
+        f.seek(0)
+        text2 = f.read().decode('utf-8')
+        assert text_with_empty_comments == text2
