@@ -28,7 +28,7 @@ _c_escapes = {
     'v': '\x0b'
 }
     
-_start_re = re.compile(r'\s*(?:/\*|")')
+_start_re = re.compile(r'\s*(?:/\*|//|")')
 _comment_re = re.compile(r'\*/')
 _exp_key_re = re.compile(r'\s*"')
 _key_re = re.compile(r'(?:\\|")')
@@ -206,6 +206,14 @@ class StringTable(object):
                             state = IN_COMMENT
                             chunks = []
                             pos = m.end(0)
+                            skip_nl = True
+                        elif m.group(0) == '//':
+                            comment_content = line[m.end(0):].strip()
+                            if comment is None:
+                                comment = comment_content
+                            else:
+                                comment += ' ' + comment_content
+                            pos = end
                         elif m.group(0) == '"':
                             state = IN_KEY
                             chunks = []
@@ -219,7 +227,8 @@ class StringTable(object):
                     if m:
                         state = EXPECTING_KEY
                         chunks.append(line[pos:m.start(0)].strip())
-                        comment = ''.join(chunks)
+                        comment = ' '.join(chunks).strip()
+                        skip_nl = False
                     else:
                         chunks.append(line[pos:].strip())
                         pos = end
