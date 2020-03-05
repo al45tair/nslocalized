@@ -31,6 +31,7 @@ _c_escapes = {
 _start_re = re.compile(r'\s*(?:/\*|//|")')
 _comment_re = re.compile(r'\*/')
 _exp_key_re = re.compile(r'\s*"')
+_raw_key_re = re.compile(r'\s*([A-Za-z][A-Za-z0-9_]*)')
 _key_re = re.compile(r'(?:\\|")')
 _hex_re = re.compile(r'[A-Fa-f0-9]+')
 _oct_re = re.compile(r'[0-7]{1,3}')
@@ -219,10 +220,16 @@ class StringTable(object):
                             state = IN_KEY
                             chunks = []
                             pos = m.end(0)
-                    elif line.strip() != '':
-                        raise ValueError('Unexpected garbage in input')
                     else:
-                        pos = end
+                        m = _raw_key_re.match(line, pos)
+                        if m:
+                            state = EXPECTING_EQUALS
+                            key = m.group(1)
+                            pos = m.end(1)
+                        elif line.strip() != '':
+                            raise ValueError('Unexpected garbage in input')
+                        else:
+                            pos = end
                 elif state == IN_COMMENT:
                     m = _comment_re.search(line, pos)
                     if m:
@@ -230,6 +237,7 @@ class StringTable(object):
                         chunks.append(line[pos:m.start(0)].strip())
                         comment = ' '.join(chunks).strip()
                         skip_nl = False
+                        pos = m.end(0)
                     else:
                         chunks.append(line[pos:].strip())
                         pos = end
@@ -240,7 +248,13 @@ class StringTable(object):
                         chunks = []
                         pos = m.end(0)
                     else:
-                        pos = end
+                        m = _raw_key_re.match(line, pos)
+                        if m:
+                            state = EXPECTING_EQUALS
+                            key = m.group(1)
+                            pos = m.end(1)
+                        else:
+                            pos = end
                 elif state == IN_KEY:
                     state, pos, skip_nl, key \
                       = handle_string(_key_re.search(line, pos),

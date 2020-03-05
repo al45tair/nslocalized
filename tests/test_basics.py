@@ -93,6 +93,20 @@ def test_writing():
 
             assert st == s2
 
+def test_raw_keys():
+    """Test that unquoted keys are parsed properly."""
+    text = '''\
+/* Name of the app. */
+CFBundleDisplayName = "My Cool App";
+NSPhotoLibraryUsageDescription = "Sharing photos is fun!";
+'''
+    with io.BytesIO(text.encode('utf_8')) as f:
+        st = StringTable.read(f)
+    assert st['CFBundleDisplayName'] == 'My Cool App'
+    assert st.lookup('CFBundleDisplayName').comment == 'Name of the app.'
+    assert st['NSPhotoLibraryUsageDescription'] == 'Sharing photos is fun!'
+    assert st.lookup('NSPhotoLibraryUsageDescription').comment is None
+
 def test_include_empty_comments():
     """Test writing and not writing empty comments."""
     text = '''\
