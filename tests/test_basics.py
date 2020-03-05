@@ -118,3 +118,44 @@ def test_include_empty_comments():
         f.seek(0)
         text2 = f.read().decode('utf-8')
         assert text_with_empty_comments == text2
+
+def test_comments():
+    """Test that comments are parsed properly."""
+    text = '''\
+/* This is a C-style comment which goes over
+   multiple lines */
+"A" = "A";
+
+/* This is a C-style comment with a
+/* nested start
+   comment */
+"B" = "B";
+
+/* This is a C-style comment with what looks like a key inside
+"NotAKey" = "NotAValue";
+*/
+"C" = "C";
+
+// This is a C++-style comment
+"D" = "D";
+
+// This C++-style comment goes over
+// multiple lines
+"E" = "E";
+
+"ThisHasNoComment" = "NoComment";
+'''
+    with io.BytesIO(text.encode('utf_8')) as f:
+        st = StringTable.read(f)
+    assert st['A'] == 'A'
+    assert st.lookup('A').comment == 'This is a C-style comment which goes over multiple lines'
+    assert st['B'] == 'B'
+    assert st.lookup('B').comment == 'This is a C-style comment with a /* nested start comment'
+    assert st['C'] == 'C'
+    assert st.lookup('C').comment == 'This is a C-style comment with what looks like a key inside "NotAKey" = "NotAValue";'
+    assert st['D'] == 'D'
+    assert st.lookup('D').comment == 'This is a C++-style comment'
+    assert st['E'] == 'E'
+    assert st.lookup('E').comment == 'This C++-style comment goes over multiple lines'
+    assert st['ThisHasNoComment'] == 'NoComment'
+    assert st.lookup('ThisHasNoComment').comment is None
